@@ -1,0 +1,21 @@
+.playlist-main-item-container {
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #181818;
+  overflow: auto;
+  border: 0px;
+  padding: 15px 0px 0px 0px;
+}
+
+.playlist-item-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+}
+
+.playlist-item-list {
+  padding: 0px;
+  margin: 5px 0px 10px 0px;
+}

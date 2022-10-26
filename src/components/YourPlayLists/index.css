@@ -1,0 +1,70 @@
+.your-playlist-main-container {
+  height: 100vh;
+  width: 100%;
+  background-color: #202020;
+}
+
+.your-playlist-container {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  position: relative;
+  top: 45px;
+  left: 10px;
+  right: 0px;
+}
+
+.your-playlist-name {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 15px 5px 5px 10px;
+}
+
+.your-playlist-music-container {
+  display: flex;
+  flex-direction: column;
+  margin: 5px 0px 5px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+ul {
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .your-playlist-main-container {
+    height: 100vh;
+    border: 0px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .your-playlist-container {
+    padding: 20px 0px 0px 20px;
+    margin: 0px 0px 0px 0px;
+    width: calc(100% - 75px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    left: 75px;
+    top: 0px;
+  }
+
+  .your-playlist-name {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 10px 20px 8px;
+  }
+
+  .your-playlist-music-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 5px 15px 5px;
+  }
+}

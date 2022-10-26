@@ -1,0 +1,18 @@
+.loader-div {
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  margin: 10px;
+}
+
+.loader-text {
+  color: #ffffff;
+  font-size: 19px;
+  font-weight: 300;
+  margin: 10px;
+}

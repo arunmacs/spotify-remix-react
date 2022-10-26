@@ -1,0 +1,65 @@
+.editor-pick-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2px;
+  padding: 0px;
+  width: 100px;
+  height: 105px;
+}
+
+.editor-pick-item-image {
+  height: 65px;
+  width: 65px;
+  border-radius: 4px;
+  margin: 2px;
+}
+
+.editor-pick-item-name {
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 300;
+  text-align: center;
+  margin: 2px 0px 2px 0px;
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 476px) {
+  .editor-pick-item {
+    width: 115px;
+    height: 130px;
+  }
+
+  .editor-pick-item-image {
+    height: 85px;
+    width: 85px;
+  }
+
+  .editor-pick-item-name {
+    font-size: 14px;
+    width: 110px;
+  }
+}
+
+@media (min-width: 768px) {
+  .editor-pick-item {
+    width: 160px;
+    height: 180px;
+    margin: 5px;
+  }
+
+  .editor-pick-item-image {
+    height: 140px;
+    width: 140px;
+  }
+
+  .editor-pick-item-name {
+    font-size: 16px;
+    width: 150px;
+    margin: 5px 0px 2px 0px;
+  }
+}

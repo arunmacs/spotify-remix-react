@@ -1,0 +1,64 @@
+.genres-moods-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2px;
+  padding: 0px;
+  width: 100px;
+  height: 105px;
+}
+
+.genres-moods-item-image {
+  height: 65px;
+  width: 65px;
+  border-radius: 4px;
+  margin: 2px;
+}
+
+.genres-moods-item-name {
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 300;
+  text-align: center;
+  margin: 2px 0px 2px 0px;
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 476px) {
+  .genres-moods-item {
+    width: 115px;
+    height: 130px;
+  }
+
+  .genres-moods-item-image {
+    height: 85px;
+    width: 85px;
+  }
+
+  .genres-moods-item-name {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 768px) {
+  .genres-moods-item {
+    width: 160px;
+    height: 180px;
+    margin: 5px;
+  }
+
+  .genres-moods-item-image {
+    height: 140px;
+    width: 140px;
+  }
+
+  .genres-moods-item-name {
+    font-size: 16px;
+    width: 150px;
+    margin: 5px 0px 2px 0px;
+  }
+}

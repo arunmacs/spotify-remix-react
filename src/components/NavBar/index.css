@@ -1,0 +1,206 @@
+:root {
+  --menu-close-color: #ffffff;
+  --main-button-border: 0;
+}
+
+.navbar-container {
+  height: 45px;
+  background-color: #000000;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  padding: 0px 6px 0px 6px;
+  overflow: hidden;
+}
+
+.side-navbar-container {
+  display: none;
+}
+
+.top-navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-navbar-links {
+  background-color: #393b40;
+  height: 45px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.music-spectrum-img {
+  height: 25px;
+  width: 60px;
+  margin: 3px 5px 3px 0px;
+}
+
+.logo-button {
+  border: var(--main-button-border);
+  background-color: transparent;
+  margin: 4px 5px 3px 5px;
+}
+
+.menu-close-button {
+  border: var(--main-button-border);
+  background-color: transparent;
+  margin: 4px 6px 4px 6px;
+}
+
+.menu-icon {
+  height: 23px;
+  width: 23px;
+  color: var(--menu-close-color);
+}
+
+.close-icon {
+  height: 24px;
+  width: 24px;
+  color: var(--menu-close-color);
+}
+
+.menu-option {
+  height: 18px;
+  width: 18px;
+  color: #aaaaaa;
+  margin: 3px 6px 3px 6px;
+}
+
+@media (min-width: 476px) {
+  .navbar-container {
+    height: 50px;
+  }
+
+  .top-navbar-links {
+    height: 50px;
+  }
+
+  .top-navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo-button {
+    margin: 5px 8px 5px 5px;
+  }
+
+  .music-spectrum-img {
+    height: 26px;
+    width: 70px;
+    margin: 4px 6px 4px 0px;
+  }
+
+  .menu-close-button {
+    margin: 5px 15px 5px 15px;
+  }
+
+  .menu-icon {
+    height: 26px;
+    width: 26px;
+  }
+
+  .close-icon {
+    height: 27px;
+    width: 27px;
+  }
+
+  .menu-option {
+    height: 22px;
+    width: 22px;
+    color: #aaaaaa;
+    margin: 4px 8px 4px 8px;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-container {
+    height: 100vh;
+    width: 65px;
+    background-color: #040306;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    padding: 0px 2px 0px 2px;
+  }
+
+  .side-navbar-container {
+    width: 100%;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .side-navbar-links {
+    height: 55%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .top-navbar-container {
+    display: none;
+  }
+
+  .top-navbar-links {
+    display: none;
+  }
+
+  .music-spectrum-img {
+    height: 35px;
+    width: 60px;
+    margin: 3px 1px 3px 1px;
+  }
+
+  .logo-button {
+    margin: 15px 0px 15px 0px;
+  }
+
+  .icon-container {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    transition: border 0.2s ease-out;
+    transition: background 0.2s ease-out;
+    transform: scale(0.9);
+  }
+
+  .icon-container:hover {
+    border-left: 3px solid #1ed760;
+    background-color: #181818;
+    transform: scale(1);
+  }
+
+  .menu-option:active {
+    transform: scale(0.8);
+  }
+
+  .activeIcon {
+    border-left: 3px solid #1ed760;
+    background-color: #181818;
+  }
+
+  .menu-option {
+    height: 25px;
+    width: 25px;
+    color: #aaaaaa;
+    margin: 8px 5px 8px 2px;
+    transition: width 0.2s ease-out;
+  }
+}
