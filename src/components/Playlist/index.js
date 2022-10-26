@@ -35,7 +35,7 @@ class Playlist extends Component {
 
     const token = this.getAccessToken();
     const apiUrl = getSpecificPlaylistApiUrl(slug, id);
-    console.log("apiUrl > ", slug, " > ", apiUrl);
+    // console.log("apiUrl > ", slug, " > ", apiUrl);
 
     const options = {
       headers: {

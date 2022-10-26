@@ -1,84 +1,77 @@
-import React, {Component} from 'react'
-import LoaderView from '../LoaderView'
-import BackNavigation from '../BackNavigation'
-import NavBar from '../NavBar'
-import GenreCategoryItem from '../GenreCategoryItem'
-import './index.css'
+import React, { Component } from "react";
+import LoaderView from "../LoaderView";
+import BackNavigation from "../BackNavigation";
+import NavBar from "../NavBar";
+import GenreCategoryItem from "../GenreCategoryItem";
+import "./index.css";
 
 class GenreCategory extends Component {
-  state = {genreListData: [], isLoading: true, screenSize: window.innerWidth}
+  state = { genreListData: [], isLoading: true, screenSize: window.innerWidth };
 
   componentDidMount() {
-    this.getGenrePlayList()
+    this.getGenrePlayList();
   }
 
   getAccessToken = () => {
-    const token = localStorage.getItem('pa_token', '')
-    return token
-  }
+    const token = localStorage.getItem("pa_token", "");
+    return token;
+  };
 
   getGenrePlayList = async () => {
-    const token = this.getAccessToken()
+    const token = this.getAccessToken();
 
-    const {match} = this.props
-    const {params} = match
-    const {categoryId} = params
+    const { match } = this.props;
+    const { params } = match;
+    const { categoryId } = params;
 
-    const userApiUrl = 'https://api.spotify.com/v1/me'
+    const userApiUrl = "https://api.spotify.com/v1/me";
     const userOptions = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      method: 'GET',
-    }
-    const userDataResponse = await fetch(userApiUrl, userOptions)
-    const userData = await userDataResponse.json()
-    const {country} = userData
+      method: "GET",
+    };
+    const userDataResponse = await fetch(userApiUrl, userOptions);
+    const userData = await userDataResponse.json();
+    const { country } = userData;
 
-    const genreListApiUrl = `https://api.spotify.com/v1/browse/categories/${categoryId}/playlists?country=${country}`
+    const genreListApiUrl = `https://api.spotify.com/v1/browse/categories/${categoryId}/playlists?country=${country}`;
     const genreListOptions = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      method: 'GET',
-    }
+      method: "GET",
+    };
 
-    const response = await fetch(genreListApiUrl, genreListOptions)
+    const response = await fetch(genreListApiUrl, genreListOptions);
     if (response.ok === true) {
-      const data = await response.json()
+      const data = await response.json();
+      // console.log("data >>> ", data);
 
-      const updatedData = data.playlists.items.map(item => ({
-        id: item.id,
-        type: item.type,
-        name: item.name,
-        description: item.description,
-        externalUrls: item.external_urls,
-        images: item.images,
-        tracks: item.tracks,
-        uri: item.uri,
-      }))
+      const updatedData = await data.playlists.items.map((item) => item);
+      console.log("updatedData >>> ", updatedData);
 
-      this.setState({genreListData: updatedData, isLoading: false})
+      this.setState({ genreListData: updatedData, isLoading: false });
     }
-  }
+  };
 
   renderPage = () => {
-    const {genreListData} = this.state
+    const { genreListData } = this.state;
 
     return (
       <>
         <h1 className="category-heading">Podcast</h1>
         <ul className="genre-list-container">
-          {genreListData.map(item => (
-            <GenreCategoryItem genreListItem={item} key={item.id} />
+          {genreListData.map((item, index) => (
+            <GenreCategoryItem genreListItem={item} key={index} />
           ))}
         </ul>
       </>
-    )
-  }
+    );
+  };
 
   render() {
-    const {isLoading, screenSize} = this.state
+    const { isLoading, screenSize } = this.state;
 
     return (
       <>
@@ -88,8 +81,8 @@ class GenreCategory extends Component {
           {isLoading ? <LoaderView /> : this.renderPage()}
         </div>
       </>
-    )
+    );
   }
 }
 
-export default GenreCategory
+export default GenreCategory;

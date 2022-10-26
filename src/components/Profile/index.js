@@ -1,41 +1,42 @@
-import React, {Component} from 'react'
-import LoaderView from '../LoaderView'
-import NavBar from '../NavBar'
+import React, { Component } from "react";
+import LoaderView from "../LoaderView";
+import NavBar from "../NavBar";
 
-import './index.css'
+import "./index.css";
 
 class Profile extends Component {
-  state = {userData: [], isLoading: true}
+  state = { userData: [], isLoading: true };
 
   componentDidMount() {
-    this.getUserProfileData()
+    this.getUserProfileData();
   }
 
   sessionTimedOut = () => {
-    const {history} = this.props
-    localStorage.removeItem('pa_token')
-    history.replace('/login')
-  }
+    const { history } = this.props;
+    localStorage.removeItem("pa_token");
+    history.replace("/login");
+  };
 
   onClickLogout = () => {
-    localStorage.removeItem('pa_token')
-    const {history} = this.props
-    history.replace('/login')
-  }
+    localStorage.removeItem("pa_token");
+    const { history } = this.props;
+    history.replace("/login");
+  };
 
   getUserProfileData = async () => {
-    const token = localStorage.getItem('pa_token', '')
-    const apiUrl = 'https://api.spotify.com/v1/me'
+    const token = localStorage.getItem("pa_token", "");
+    const apiUrl = "https://api.spotify.com/v1/me";
     const options = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      method: 'GET',
-    }
+      method: "GET",
+    };
 
-    const response = await fetch(apiUrl, options)
+    const response = await fetch(apiUrl, options);
     if (response.ok === true) {
-      const data = await response.json()
+      const data = await response.json();
+      console.log("data > ", data);
 
       const updatedUserData = {
         displayName: data.display_name,
@@ -48,15 +49,15 @@ class Profile extends Component {
         product: data.product,
         type: data.type,
         uri: data.uri,
-      }
-      this.setState({userData: updatedUserData, isLoading: false})
+      };
+      this.setState({ userData: updatedUserData, isLoading: false });
     } else {
-      this.sessionTimedOut()
+      this.sessionTimedOut();
     }
-  }
+  };
 
   renderProfilePage = () => {
-    const {userData} = this.state
+    const { userData } = this.state;
 
     return (
       <div className="profile-container">
@@ -80,19 +81,19 @@ class Profile extends Component {
           LOGOUT
         </button>
       </div>
-    )
-  }
+    );
+  };
 
   render() {
-    const {isLoading} = this.state
+    const { isLoading } = this.state;
 
     return (
       <>
         <NavBar />
         {isLoading ? <LoaderView /> : this.renderProfilePage()}
       </>
-    )
+    );
   }
 }
 
-export default Profile
+export default Profile;

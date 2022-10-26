@@ -7,7 +7,7 @@ const noAlbumImg =
 const AlbumDisplayInfo = (props) => {
   const { displayInfo, section } = props;
   const { images, name } = displayInfo;
-  console.log("images > ", images);
+  // console.log("images > ", images);
 
   let image;
   let albumName;
