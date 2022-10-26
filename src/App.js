@@ -6,11 +6,9 @@ import ProtectedRoute from './components/ProtectedRoute'
 import YourPlayLists from './components/YourPlayLists'
 import YourMusic from './components/YourMusic'
 import Profile from './components/Profile'
-import EditorPickPlaylist from './components/EditorPickPlaylist'
-import NewReleasePlaylist from './components/NewReleasePlaylist'
+import Playlist from './components/Playlist'
 import PlayListAlbum from './components/PlayListAlbum'
 import GenreCategory from './components/GenreCategory'
-import GenreAlbumPlaylist from './components/GenreAlbumPlaylist'
 import Search from './components/Search'
 import NotFound from './components/NotFound'
 
@@ -24,15 +22,11 @@ const App = () => (
       <ProtectedRoute exact path="/your-music" component={YourMusic} />
       <ProtectedRoute exact path="/playlists" component={YourPlayLists} />
       <ProtectedRoute exact path="/profile" component={Profile} />
-      <ProtectedRoute
-        exact
-        path="/editor-pick/:id"
-        component={EditorPickPlaylist}
-      />
+      <ProtectedRoute exact path="/editor-pick/:id" component={Playlist} />
       <ProtectedRoute
         exact
         path="/new-releases/album/:id"
-        component={NewReleasePlaylist}
+        component={Playlist}
       />
       <ProtectedRoute
         exact
@@ -47,7 +41,7 @@ const App = () => (
       <ProtectedRoute
         exact
         path="/genre/:categoryId/:id/playlist"
-        component={GenreAlbumPlaylist}
+        component={Playlist}
       />
       <ProtectedRoute exact path="/search" component={Search} />
       <ProtectedRoute exact path="/search/playlist/:id" />

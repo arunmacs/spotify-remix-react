@@ -5,7 +5,7 @@ import './index.css'
 
 const SongItem = props => {
   const {songData, selectSong, index, isActive, displayInfo} = props
-  const {artists, album, durationMs, name} = songData
+  const {artists, album, duration_ms, name} = songData
 
   const activeSongClass = isActive && 'activeClass'
 
@@ -24,7 +24,7 @@ const SongItem = props => {
     selectSong(index)
   }
 
-  const getFormaDistance = added => {
+  const getFromDistance = added => {
     const addedAgo = moment(added, 'YYYYMMDD').fromNow()
     return addedAgo
   }
@@ -50,13 +50,13 @@ const SongItem = props => {
           </span>
         </div>
         <span id="song-name">{name}</span>
-        <span id="album-name">{album ? album.name : '(Album?)'}</span>
-        <span id="duration">{getDurationTime(durationMs)}</span>
+        <span id="album-name">{album ? album.name : ''}</span>
+        <span id="duration">{getDurationTime(duration_ms)}</span>
         <span id="artist-name">{artists ? artists[0].name : 'Artist'}</span>
         <span id="added">
           {album
-            ? getFormaDistance(album.release_date)
-            : getFormaDistance(displayInfo.releaseDate)}
+            ? getFromDistance(album.release_date || '')
+            : getFromDistance(displayInfo.release_date || '')}
         </span>
       </div>
     </li>

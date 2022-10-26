@@ -48,19 +48,13 @@ class GenreCategory extends Component {
       const data = await response.json()
 
       const updatedData = data.playlists.items.map(item => ({
-        collaborative: item.collaborative,
+        id: item.id,
+        type: item.type,
+        name: item.name,
         description: item.description,
         externalUrls: item.external_urls,
-        href: item.href,
-        id: item.id,
         images: item.images,
-        name: item.name,
-        owner: item.owner,
-        primaryColor: item.primary_color,
-        public: item.public,
-        snapshotId: item.snapshot_id,
         tracks: item.tracks,
-        type: item.type,
         uri: item.uri,
       }))
 

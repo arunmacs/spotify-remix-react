@@ -9,7 +9,7 @@ import SongItem from '../SongItem'
 
 import './index.css'
 
-class Player extends React.Component {
+class MusicPlayer extends React.Component {
   state = {
     ...this.props,
     index: 0,
@@ -66,7 +66,7 @@ class Player extends React.Component {
       artist = 'Artist'
     }
 
-    return {albumImage: image, albumArtist: artist}
+    return {album_image: image, album_artist: artist}
   }
 
   prevSong = () => {
@@ -87,11 +87,11 @@ class Player extends React.Component {
   }
 
   nextSong = () => {
-    const {index, activeSongClass, pause, musicList} = this.state
+    const {index, activeSongClass, pause, playList} = this.state
 
     if (
-      index + 1 === musicList.length &&
-      activeSongClass + 1 === musicList.length
+      index + 1 === playList.length &&
+      activeSongClass + 1 === playList.length
     ) {
       this.playerRef.pause()
       this.setState({pause: !pause})
@@ -107,8 +107,8 @@ class Player extends React.Component {
   }
 
   playOrPause = () => {
-    const {musicList, index, pause} = this.state
-    const currentSong = musicList[index]
+    const {playList, index, pause} = this.state
+    const currentSong = playList[index]
     const audio = new Audio(currentSong.audio)
     console.log(audio)
 
@@ -123,9 +123,10 @@ class Player extends React.Component {
   }
 
   updatePlayer = () => {
-    const {musicList, index, pause} = this.state
+    const {playList, index, pause} = this.state
 
-    const currentSong = musicList[index]
+    const currentSong = playList[index]
+    console.log(currentSong, 'currentSong')
     const audio = new Audio(currentSong.audio)
     console.log(audio)
     this.playerRef.load()
@@ -192,9 +193,9 @@ class Player extends React.Component {
   }
 
   renderMusicControlsMobileView = () => {
-    const {musicList, index, pause} = this.state
-    const currentSong = musicList[index]
-    const {albumImage, albumArtist} = this.getAlbumImageArtist(currentSong)
+    const {playList, index, pause} = this.state
+    const currentSong = playList[index]
+    const {album_image, album_artist} = this.getAlbumImageArtist(currentSong)
 
     return (
       <>
@@ -203,14 +204,14 @@ class Player extends React.Component {
             this.playerRef = ref
           }}
         >
-          <source src={currentSong.previewUrl} type="audio/mp3" />
+          <source src={currentSong.preview_url} type="audio/mp3" />
           <track kind="captions" srcLang="en" />
         </audio>
-        <img src={albumImage} alt="album" className="album-img" />
+        <img src={album_image} alt="album" className="album-img" />
         <div className="album-info">
           <p className="album-name">{currentSong.name}</p>
           <div className="artist-div">
-            <span className="artist-name">{albumArtist}</span>
+            <span className="artist-name">{album_artist}</span>
           </div>
         </div>
         <button
@@ -243,12 +244,12 @@ class Player extends React.Component {
   }
 
   renderMusicControlsDesktopView = () => {
-    const {musicList, index, pause, currTime, seek, volume} = this.state
+    const {playList, index, pause, currTime, seek, volume} = this.state
 
-    const currentSong = musicList[index]
-    const {durationMs} = currentSong
+    const currentSong = playList[index]
+    const {duration_ms} = currentSong
 
-    const {albumImage, albumArtist} = this.getAlbumImageArtist(currentSong)
+    const {album_image, album_artist} = this.getAlbumImageArtist(currentSong)
 
     return (
       <>
@@ -257,14 +258,14 @@ class Player extends React.Component {
             this.playerRef = ref
           }}
         >
-          <source src={currentSong.previewUrl} type="audio/mp3" />
+          <source src={currentSong.preview_url} type="audio/mp3" />
           <track kind="captions" srcLang="en" />
         </audio>
-        <img src={albumImage} alt="album" className="album-img" />
+        <img src={album_image} alt="album" className="album-img" />
         <div className="album-info">
           <p className="album-name">{currentSong.name}</p>
           <div className="artist-div">
-            <span className="artist-name">{albumArtist}</span>
+            <span className="artist-name">{album_artist}</span>
           </div>
         </div>
         <button
@@ -293,7 +294,7 @@ class Player extends React.Component {
           <BsSkipForward className="next-prev-icon" />
         </button>
         <span className="time-update">
-          {this.formatTime(durationMs / 1000)}
+          {this.formatTime(duration_ms / 1000)}
         </span>
         <input
           type="range"
@@ -316,11 +317,11 @@ class Player extends React.Component {
   }
 
   renderSongsList = () => {
-    const {musicList, activeSongClass, displayInfo} = this.state
-
+    const {playList, activeSongClass, displayInfo} = this.state
+    console.log('MusicPlayer > playList > ', playList)
     return (
       <>
-        {musicList.map((item, key = 0) => (
+        {playList.map((item, key = 0) => (
           <SongItem
             songData={item}
             displayInfo={displayInfo}
@@ -364,4 +365,4 @@ class Player extends React.Component {
   }
 }
 
-export default Player
+export default MusicPlayer

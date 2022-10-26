@@ -15,7 +15,7 @@ const GenreCategoryItem = props => {
 
   let image
 
-  if (images !== undefined) {
+  if (images !== 'undefined') {
     image = images.reduce((prev, curr) =>
       prev.height > curr.height ? prev : curr,
     )

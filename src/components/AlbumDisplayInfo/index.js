@@ -7,11 +7,12 @@ const noAlbumImg =
 const AlbumDisplayInfo = props => {
   const {displayInfo, section} = props
   const {images, name} = displayInfo
+  console.log('images > ', images)
 
   let image
   let albumName
 
-  if (images !== undefined) {
+  if (images !== 'undefined') {
     image = images.reduce((prev, curr) =>
       prev.height > curr.height ? prev : curr,
     )
@@ -20,7 +21,7 @@ const AlbumDisplayInfo = props => {
     image = noAlbumImg
   }
 
-  if (name === undefined) {
+  if (name === 'undefined') {
     albumName = 'Album'
   } else {
     albumName = name

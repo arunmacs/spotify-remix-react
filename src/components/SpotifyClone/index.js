@@ -1,10 +1,8 @@
 import React, {Component} from 'react'
 import moment from 'moment'
-import LoaderView from '../LoaderView'
-import EditorsPicks from '../EditorsPicks'
-import GenresAndMoods from '../GenresAndMoods'
-import NewReleases from '../NewReleases'
 import NavBar from '../NavBar'
+import Cards from '../Cards'
+import LoaderView from '../LoaderView'
 
 import './index.css'
 
@@ -68,22 +66,20 @@ class SpotifyClone extends Component {
 
     if (response.ok === true) {
       const data = await response.json()
+      // console.log('getEditorsPickData', data)
 
       const updatedData = data.playlists.items.map(item => ({
-        collaborative: item.collaborative,
-        description: item.description,
-        externalUrls: item.external_urls,
-        href: item.href,
-        id: item.id,
-        images: item.images,
-        name: item.name,
-        owner: item.owner,
-        primaryColor: item.primary_color,
-        public: item.public,
-        snapshotId: item.snapshot_id,
-        tracks: item.tracks,
-        type: item.type,
-        uri: item.uri,
+        id: item.id || 'undefined',
+        type: item.type || 'undefined',
+        albumType: item.album_type || 'undefined',
+        name: item.name || 'undefined',
+        artists: item.artists || 'undefined',
+        images: item.images || 'undefined',
+        releaseDate: item.release_date || 'undefined',
+        externalUrls: item.external_urls || 'undefined',
+        totalTracks: item.total_tracks || 'undefined',
+        uri: item.uri || 'undefined',
+        slug: 'editor-pick',
       }))
 
       this.setState({
@@ -110,12 +106,20 @@ class SpotifyClone extends Component {
 
     if (response.ok === true) {
       const data = await response.json()
+      // console.log('getGenreAndMoodsData', data)
 
       const updatedData = data.categories.items.map(item => ({
-        href: item.href,
-        icons: item.icons,
-        id: item.id,
-        name: item.name,
+        id: item.id || 'undefined',
+        type: 'category',
+        albumType: item.album_type || 'undefined',
+        name: item.name || 'undefined',
+        artists: item.artists || 'undefined',
+        images: item.icons || 'undefined',
+        releaseDate: item.release_date || 'undefined',
+        externalUrls: item.external_urls || 'undefined',
+        totalTracks: item.total_tracks || 'undefined',
+        uri: item.uri || 'undefined',
+        slug: 'genre',
       }))
 
       this.setState({
@@ -152,21 +156,20 @@ class SpotifyClone extends Component {
     const response = await fetch(newReleasesApiUrl, newReleasesOptions)
     if (response.ok === true) {
       const data = await response.json()
+      // console.log('getNewReleasesData', data)
 
       const updatedData = data.albums.items.map(item => ({
-        albumType: item.album_type,
-        artists: item.artists,
-        availableMarkets: item.available_markets,
-        externalUrls: item.external_urls,
-        href: item.href,
-        id: item.id,
-        images: item.images,
-        name: item.name,
-        releaseDate: item.release_date,
-        releaseDatePrecision: item.release_date_precision,
-        totalTracks: item.total_tracks,
-        type: item.type,
-        uri: item.uri,
+        id: item.id || 'undefined',
+        type: item.type || 'undefined',
+        albumType: item.album_type || 'undefined',
+        name: item.name || 'undefined',
+        artists: item.artists || 'undefined',
+        images: item.images || 'undefined',
+        releaseDate: item.release_date || 'undefined',
+        externalUrls: item.external_urls || 'undefined',
+        totalTracks: item.total_tracks || 'undefined',
+        uri: item.uri || 'undefined',
+        slug: 'new-releases/album',
       }))
 
       this.setState({
@@ -178,74 +181,53 @@ class SpotifyClone extends Component {
     }
   }
 
-  renderEditorsPicksList = () => {
-    const {editorsPickData} = this.state
-
-    return (
-      <div className="content-container">
-        <h1 className="content-heading">Editor&apos;s picks</h1>
-        <div className="content">
-          {editorsPickData.map(item => (
-            <EditorsPicks editorsPickData={item} key={item.id} />
-          ))}
-        </div>
+  renderCardsItems = (title, data) => (
+    <div className="content-container">
+      <h1 className="content-heading">{title}</h1>
+      <div className="content">
+        {data.map(item => (
+          <Cards data={item} key={item.id} />
+        ))}
       </div>
-    )
-  }
-
-  renderGenresAndMoodList = () => {
-    const {genresAndMoodsData} = this.state
-
-    return (
-      <div className="content-container">
-        <h1 className="content-heading">Genres & Moods</h1>
-        <div className="content">
-          {genresAndMoodsData.map(item => (
-            <GenresAndMoods genresAndMoodsData={item} key={item.id} />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  renderNewReleasesList = () => {
-    const {newReleasesData} = this.state
-
-    return (
-      <div className="content-container">
-        <h1 className="content-heading">New Releases</h1>
-        <div className="content">
-          {newReleasesData.map(item => (
-            <NewReleases newReleasesData={item} key={item.id} />
-          ))}
-        </div>
-      </div>
-    )
-  }
+    </div>
+  )
 
   renderHomeView = () => {
     const {
       isEditorPickSectionLoading,
       isGenreMoodSectionLoading,
       isNewReleaseSectionLoading,
+      editorsPickData,
+      genresAndMoodsData,
+      newReleasesData,
     } = this.state
+
+    console
+      .log
+      // 'editorsPickData > ',
+      // editorsPickData,
+      // 'genresAndMoodsData > ',
+      // genresAndMoodsData,
+      // 'newReleasesData > ',
+      // newReleasesData,
+      ()
 
     return (
       <>
         {isEditorPickSectionLoading ? (
           <LoaderView />
         ) : (
-          this.renderEditorsPicksList()
+          this.renderCardsItems("Editor's picks", editorsPickData)
         )}
         {isGenreMoodSectionLoading ? (
           <LoaderView />
         ) : (
-          this.renderGenresAndMoodList()
+          this.renderCardsItems('Genres & Moods', genresAndMoodsData)
         )}
         {isNewReleaseSectionLoading ? (
           <LoaderView />
         ) : (
-          this.renderNewReleasesList()
+          this.renderCardsItems('New Releases', newReleasesData)
         )}
       </>
     )

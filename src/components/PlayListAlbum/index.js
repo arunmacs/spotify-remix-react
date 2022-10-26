@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import Player from '../Player'
+import Player from '../MusicPlayer'
 import LoaderView from '../LoaderView'
 
 import './index.css'

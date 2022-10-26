@@ -55,6 +55,7 @@ class LoginForm extends Component {
       'message',
       event => {
         const hash = JSON.parse(event.data)
+
         if (hash.type === 'access_token') {
           localStorage.setItem('pa_token', hash.access_token)
           localStorage.setItem(
