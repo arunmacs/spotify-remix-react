@@ -102,7 +102,7 @@ class MusicPlayer extends React.Component {
     const { playlist, index, pause } = this.props.store;
     const currentSong = playlist[index];
     const audio = new Audio(currentSong.audio);
-    // console.log(audio);
+    console.log(audio);
 
     if (!pause) {
       this.playerRef.play();
@@ -118,7 +118,7 @@ class MusicPlayer extends React.Component {
 
     const currentSong = playlist[index];
     const audio = new Audio(currentSong.audio);
-    // console.log(audio);
+    console.log(audio);
     this.playerRef.load();
 
     if (pause) {
