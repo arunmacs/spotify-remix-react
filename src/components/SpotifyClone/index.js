@@ -1,68 +1,43 @@
+// Libraries/Packages
 import React, { Component } from "react";
-import moment from "moment";
+import { connect } from "react-redux";
+// Redux/UtilityFunctions/Constants/Services
+import {
+  setEditorsPicks,
+  setGenreMoods,
+  setNewReleases,
+  setEditorPickSectionLoading,
+  setGenreMoodSectionLoading,
+  setNewReleaseSectionLoading,
+} from "../../Redux/Reducers/spotifyHomeReducer";
+// import { userProfile } from '../../services'
+import {
+  getTimeStamp,
+  sessionTimedOut,
+  getFetchOptions,
+} from "../../utils/utils";
+import { actions, apiUrls } from "../../utils/constants";
+// Components
 import NavBar from "../NavBar";
 import Cards from "../Cards";
 import LoaderView from "../LoaderView";
-
+// CSS/Styles
 import "./index.css";
 
 class SpotifyClone extends Component {
-  state = {
-    editorsPickData: [],
-    genresAndMoodsData: [],
-    newReleasesData: [],
-    isEditorPickSectionLoading: true,
-    isGenreMoodSectionLoading: true,
-    isNewReleaseSectionLoading: true,
-  };
-
   componentDidMount() {
     this.getEditorsPickData();
     this.getGenreAndMoodsData();
     this.getNewReleasesData();
   }
 
-  getAccessToken = () => {
-    const token = localStorage.getItem("pa_token", "");
-    return token;
-  };
-
-  getTimeStamp = () => {
-    const timestamp = moment(new Date()).format("YYYY-MM-DDTHH:00:00");
-    return timestamp;
-  };
-
-  sessionTimedOut = () => {
-    const { history } = this.props;
-    localStorage.removeItem("pa_token");
-    history.replace("/login");
-  };
-
   getEditorsPickData = async () => {
-    const token = this.getAccessToken();
-
-    const timeStamp = this.getTimeStamp();
-
-    const userApiUrl = "https://api.spotify.com/v1/me";
-    const userOptions = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    };
-    const userDataResponse = await fetch(userApiUrl, userOptions);
+    const timeStamp = getTimeStamp();
+    const userDataResponse = await fetch(apiUrls.userApiUrl, getFetchOptions());
     const userData = await userDataResponse.json();
     const { country } = userData;
-
     const editorsPickApiUrl = `https://api.spotify.com/v1/browse/featured-playlists?country=${country}&timestamp=${timeStamp}`;
-    const editorsPickOptions = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    };
-
-    const response = await fetch(editorsPickApiUrl, editorsPickOptions);
+    const response = await fetch(editorsPickApiUrl, getFetchOptions());
 
     if (response.ok === true) {
       const data = await response.json();
@@ -82,27 +57,17 @@ class SpotifyClone extends Component {
         slug: "editor-pick",
       }));
 
-      this.setState({
-        editorsPickData: updatedData,
-        isEditorPickSectionLoading: false,
-      });
+      this.props.setData(updatedData, { type: actions.editors });
+      this.props.setLoading(false, { type: actions.editors });
     } else {
-      this.sessionTimedOut();
+      sessionTimedOut(this.props);
     }
   };
 
   getGenreAndMoodsData = async () => {
-    const token = this.getAccessToken();
-
     const categoryApiUrl = "https://api.spotify.com/v1/browse/categories";
-    const categoryOptions = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    };
 
-    const response = await fetch(categoryApiUrl, categoryOptions);
+    const response = await fetch(categoryApiUrl, getFetchOptions());
 
     if (response.ok === true) {
       const data = await response.json();
@@ -122,38 +87,23 @@ class SpotifyClone extends Component {
         slug: "genre",
       }));
 
-      this.setState({
-        genresAndMoodsData: updatedData,
-        isGenreMoodSectionLoading: false,
-      });
+      this.props.setData(updatedData, { type: actions.genres });
+      this.props.setLoading(false, { type: actions.genres });
     } else {
-      this.sessionTimedOut();
+      sessionTimedOut(this.props);
     }
   };
 
   getNewReleasesData = async () => {
-    const token = this.getAccessToken();
-
     const userApiUrl = "https://api.spotify.com/v1/me";
-    const userOptions = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    };
-    const userDataResponse = await fetch(userApiUrl, userOptions);
+
+    const userDataResponse = await fetch(userApiUrl, getFetchOptions());
     const userData = await userDataResponse.json();
     const { country } = userData;
 
     const newReleasesApiUrl = `https://api.spotify.com/v1/browse/new-releases?country=${country}`;
-    const newReleasesOptions = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    };
 
-    const response = await fetch(newReleasesApiUrl, newReleasesOptions);
+    const response = await fetch(newReleasesApiUrl, getFetchOptions());
     if (response.ok === true) {
       const data = await response.json();
       // console.log('getNewReleasesData', data)
@@ -172,12 +122,10 @@ class SpotifyClone extends Component {
         slug: "new-releases/album",
       }));
 
-      this.setState({
-        newReleasesData: updatedData,
-        isNewReleaseSectionLoading: false,
-      });
+      this.props.setData(updatedData, { type: actions.newReleases });
+      this.props.setLoading(false, { type: actions.newReleases });
     } else {
-      this.sessionTimedOut();
+      sessionTimedOut(this.props);
     }
   };
 
@@ -185,8 +133,8 @@ class SpotifyClone extends Component {
     <div className="content-container">
       <h1 className="content-heading">{title}</h1>
       <div className="content">
-        {data.map((item) => (
-          <Cards data={item} key={item.id} />
+        {data.map((item, index) => (
+          <Cards data={item} key={index} />
         ))}
       </div>
     </div>
@@ -200,17 +148,7 @@ class SpotifyClone extends Component {
       editorsPickData,
       genresAndMoodsData,
       newReleasesData,
-    } = this.state;
-
-    console
-      .log
-      // 'editorsPickData > ',
-      // editorsPickData,
-      // 'genresAndMoodsData > ',
-      // genresAndMoodsData,
-      // 'newReleasesData > ',
-      // newReleasesData,
-      ();
+    } = this.props.store;
 
     return (
       <>
@@ -243,4 +181,40 @@ class SpotifyClone extends Component {
   }
 }
 
-export default SpotifyClone;
+const mapStateToProps = (state) => {
+  return {
+    store: state.spotifyHomeReducer,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setData: (data, { type }) => {
+      switch (type) {
+        case actions.editors:
+          return dispatch(setEditorsPicks(data));
+        case actions.genres:
+          return dispatch(setGenreMoods(data));
+        case actions.newReleases:
+          return dispatch(setNewReleases(data));
+        default:
+          return;
+      }
+    },
+    setLoading: (data, { type }) => {
+      switch (type) {
+        case actions.editors:
+          return dispatch(setEditorPickSectionLoading(data));
+        case actions.genres:
+          return dispatch(setGenreMoodSectionLoading(data));
+        case actions.newReleases:
+          return dispatch(setNewReleaseSectionLoading(data));
+        default:
+          return;
+      }
+    },
+    // setData: (data) => dispatch(setSpotifyHomeData(data)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SpotifyClone);

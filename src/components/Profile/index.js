@@ -1,68 +1,37 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { setUserProfileData } from "../../Redux/Reducers/userProfileReducer";
+import { sessionTimedOut, getFetchOptions } from "../../utils/utils";
+import { apiUrls } from "../../utils/constants";
 import LoaderView from "../LoaderView";
 import NavBar from "../NavBar";
 
 import "./index.css";
 
 class Profile extends Component {
-  state = { userData: [], isLoading: true };
-
   componentDidMount() {
     this.getUserProfileData();
   }
 
-  sessionTimedOut = () => {
-    const { history } = this.props;
-    localStorage.removeItem("pa_token");
-    history.replace("/login");
-  };
-
-  onClickLogout = () => {
-    localStorage.removeItem("pa_token");
-    const { history } = this.props;
-    history.replace("/login");
-  };
-
   getUserProfileData = async () => {
-    const token = localStorage.getItem("pa_token", "");
-    const apiUrl = "https://api.spotify.com/v1/me";
-    const options = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    };
-
-    const response = await fetch(apiUrl, options);
+    const response = await fetch(apiUrls.userApiUrl, getFetchOptions());
     if (response.ok === true) {
       const data = await response.json();
-      console.log("data > ", data);
+      // console.log("data > ", data);
 
-      const updatedUserData = {
-        displayName: data.display_name,
-        country: data.country,
-        email: data.email,
-        followers: data.followers,
-        href: data.href,
-        id: data.id,
-        images: data.images,
-        product: data.product,
-        type: data.type,
-        uri: data.uri,
-      };
-      this.setState({ userData: updatedUserData, isLoading: false });
+      this.props.setUserProfileData({ userData: data, isLoading: false });
     } else {
-      this.sessionTimedOut();
+      sessionTimedOut(this.props);
     }
   };
 
   renderProfilePage = () => {
-    const { userData } = this.state;
+    const { userData } = this.props.store;
 
     return (
       <div className="profile-container">
         <img src="/img/avatar-icon.png" alt="avatar" className="user-icon" />
-        <h1 className="user-name">{userData.displayName}</h1>
+        <h1 className="user-name">{userData.display_name}</h1>
         <div className="followers-playlists-info-container">
           <div className="followers-playlists-div">
             <p className="followers-playlists-info">10</p>
@@ -75,7 +44,7 @@ class Profile extends Component {
         </div>
         <button
           type="button"
-          onClick={this.onClickLogout}
+          onClick={() => sessionTimedOut(this.props)}
           className="logout-button"
         >
           LOGOUT
@@ -85,7 +54,8 @@ class Profile extends Component {
   };
 
   render() {
-    const { isLoading } = this.state;
+    const { isLoading } = this.props.store;
+    // console.log(this.props, "userss");
 
     return (
       <>
@@ -96,4 +66,18 @@ class Profile extends Component {
   }
 }
 
-export default Profile;
+const mapStateToProps = (state) => {
+  return {
+    store: state.userProfileReducer,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setUserProfileData: (data) => {
+      dispatch(setUserProfileData(data));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

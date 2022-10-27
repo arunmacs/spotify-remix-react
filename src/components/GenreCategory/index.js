@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { getFetchOptions } from "../../utils/utils";
+import { apiUrls } from "../../utils/constants";
 import LoaderView from "../LoaderView";
 import BackNavigation from "../BackNavigation";
 import NavBar from "../NavBar";
@@ -10,46 +12,35 @@ class GenreCategory extends Component {
 
   componentDidMount() {
     this.getGenrePlayList();
+    window.addEventListener("resize", this.resizeWindow);
   }
 
-  getAccessToken = () => {
-    const token = localStorage.getItem("pa_token", "");
-    return token;
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.resizeWindow);
+  }
+
+  resizeWindow = () => {
+    this.setState({ screenSize: window.innerWidth });
   };
 
   getGenrePlayList = async () => {
-    const token = this.getAccessToken();
-
     const { match } = this.props;
     const { params } = match;
     const { categoryId } = params;
 
-    const userApiUrl = "https://api.spotify.com/v1/me";
-    const userOptions = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    };
-    const userDataResponse = await fetch(userApiUrl, userOptions);
+    const userDataResponse = await fetch(apiUrls.userApiUrl, getFetchOptions());
     const userData = await userDataResponse.json();
     const { country } = userData;
 
     const genreListApiUrl = `https://api.spotify.com/v1/browse/categories/${categoryId}/playlists?country=${country}`;
-    const genreListOptions = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    };
 
-    const response = await fetch(genreListApiUrl, genreListOptions);
+    const response = await fetch(genreListApiUrl, getFetchOptions());
     if (response.ok === true) {
       const data = await response.json();
       // console.log("data >>> ", data);
 
       const updatedData = await data.playlists.items.map((item) => item);
-      console.log("updatedData >>> ", updatedData);
+      // console.log("updatedData >>> ", updatedData);
 
       this.setState({ genreListData: updatedData, isLoading: false });
     }

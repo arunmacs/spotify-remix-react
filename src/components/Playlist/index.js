@@ -1,50 +1,30 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { setPlaylist } from "../../Redux/Reducers/playlistReducer";
+import {
+  sessionTimedOut,
+  getFetchOptions,
+  getSpecificPlaylistApiUrl,
+} from "../../utils/utils";
 import MusicPlayer from "../MusicPlayer";
 import LoaderView from "../LoaderView";
-import { getSpecificPlaylistApiUrl } from "../../utils/utils";
 
 import "./index.css";
 
 class Playlist extends Component {
-  state = {
-    playList: [],
-    displayInfo: {},
-    isLoading: true,
-  };
-
   componentDidMount() {
     this.getSpecificPlaylist();
   }
-
-  getAccessToken = () => {
-    const token = localStorage.getItem("pa_token", "");
-    return token;
-  };
-
-  sessionTimedOut = () => {
-    const { history } = this.props;
-    localStorage.removeItem("pa_token");
-
-    history.replace("/login");
-  };
 
   getSpecificPlaylist = async () => {
     const { match } = this.props;
     const { id } = match.params;
     const slug = match.path.split("/:")[0];
 
-    const token = this.getAccessToken();
     const apiUrl = getSpecificPlaylistApiUrl(slug, id);
     // console.log("apiUrl > ", slug, " > ", apiUrl);
 
-    const options = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    };
-
-    const response = await fetch(apiUrl, options);
+    const response = await fetch(apiUrl, getFetchOptions());
 
     if (response.ok === true) {
       const data = await response.json();
@@ -63,35 +43,35 @@ class Playlist extends Component {
         uri: data.uri || "undefined",
       };
 
-      let playList;
+      let playlist;
 
       if (slug === "/genre" || slug === "/your-music") {
         // console.log('slug > ', slug)
-        playList = await data.items.map((item) => item.track);
+        playlist = await data.items.map((item) => item.track);
       }
       if (slug === "/new-releases/album") {
         // console.log('slug ', slug)
-        playList = await data.tracks.items.map((item) => item);
+        playlist = await data.tracks.items.map((item) => item);
       }
       if (slug === "/editor-pick" || slug === "/your-playlists") {
         // console.log("slug ", slug);
-        playList = await data.tracks.items.map((item) => item.track);
+        playlist = await data.tracks.items.map((item) => item.track);
       }
 
-      // console.log("playList > ", playList);
-
-      this.setState({
-        playList,
+      // console.log("playlist > ", playlist);
+      this.props.setPlaylist({
+        playlist,
         displayInfo,
         isLoading: false,
       });
     } else {
-      this.sessionTimedOut();
+      sessionTimedOut(this.props);
     }
   };
 
   render() {
-    const { isLoading, displayInfo, playList } = this.state;
+    const { isLoading, displayInfo, playlist } = this.props.store;
+    // console.log(this.props);
 
     return (
       <div>
@@ -99,7 +79,7 @@ class Playlist extends Component {
           <LoaderView />
         ) : (
           <MusicPlayer
-            playList={playList}
+            playlist={playlist}
             displayInfo={displayInfo}
             section="Editor's pick's"
           />
@@ -109,4 +89,18 @@ class Playlist extends Component {
   }
 }
 
-export default Playlist;
+const mapStateToProps = (state) => {
+  return {
+    store: state.playlistReducer,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setPlaylist: (data) => {
+      dispatch(setPlaylist(data));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Playlist);

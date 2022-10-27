@@ -1,21 +1,21 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
+import React from "react";
+import { Link } from "react-router-dom";
 
-import './index.css'
+import "./index.css";
 
-const Cards = props => {
-  const {data} = props
-  const {name, id, images, slug} = data
+const Cards = (props) => {
+  const { data } = props;
+  const { name, id, images, slug } = data;
 
-  let image
+  let image;
 
   if (images !== undefined) {
     image = images.reduce((prev, curr) =>
-      prev.height > curr.height ? prev : curr,
-    )
-    image = image.url
+      prev.height > curr.height ? prev : curr
+    );
+    image = image.url;
   } else {
-    image = null
+    image = null;
   }
 
   return (
@@ -25,7 +25,7 @@ const Cards = props => {
         <p className="card-item-name">{name}</p>
       </div>
     </Link>
-  )
-}
+  );
+};
 
-export default Cards
+export default Cards;

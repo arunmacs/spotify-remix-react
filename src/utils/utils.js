@@ -1,23 +1,7 @@
-const slugs = {
-  editorPick: "/editor-pick",
-  newRelease: "/new-releases/album",
-  genreAlbum: "/genre",
-  yourMusic: "/your-music",
-  yourPlaylists: "/your-playlists",
-};
-
-const apiUrls = {
-  editorPickPlaylistApiUrl:
-    "https://api.spotify.com/v1/users/spotify/playlists",
-  newReleasePlaylistApiUrl: "https://api.spotify.com/v1/albums",
-  genreAlbumPlaylistApiUrl: `https://api.spotify.com/v1/playlists`,
-  //   suffix with /:id/tracks for the above api in component level filter
-  yourMusicPlaylistApiUrl: `https://api.spotify.com/v1/me/tracks`,
-  yourPlaylistsApiUrl: `https://api.spotify.com/v1/users/spotify/playlists`,
-};
+import moment from "moment";
+import { slugs, apiUrls } from "./constants";
 
 export const getSpecificPlaylistApiUrl = (slug, id) => {
-  // console.log(slug, id)
   switch (slug) {
     case slugs.editorPick:
       return `${apiUrls.editorPickPlaylistApiUrl}/${id}`;
@@ -32,4 +16,29 @@ export const getSpecificPlaylistApiUrl = (slug, id) => {
     default:
       return "";
   }
+};
+
+export const getAccessToken = () => {
+  const token = localStorage.getItem("pa_token", "");
+  return token;
+};
+
+export const getFetchOptions = () => {
+  const token = getAccessToken();
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    method: "GET",
+  };
+};
+
+export const getTimeStamp = () => {
+  const timeStamp = moment(new Date()).format("YYYY-MM-DDTHH:00:00");
+  return timeStamp;
+};
+
+export const sessionTimedOut = ({ history }) => {
+  localStorage.removeItem("pa_token");
+  history.replace("/login");
 };

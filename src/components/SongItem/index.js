@@ -20,10 +20,6 @@ const SongItem = (props) => {
     image = "/img/no-album-image.png";
   }
 
-  const onClickSelectSong = () => {
-    selectSong(index);
-  };
-
   const getFromDistance = (added) => {
     const addedAgo = moment(added, "YYYYMMDD").fromNow();
     return addedAgo;
@@ -40,7 +36,10 @@ const SongItem = (props) => {
   };
 
   return (
-    <li className={`song-row ${activeSongClass}`} onClick={onClickSelectSong}>
+    <li
+      className={`song-row ${activeSongClass}`}
+      onClick={() => selectSong(index)}
+    >
       <img src={image} alt="album" className="song-thumbnail" />
       <div id="song-info">
         <div className="song-info-md">

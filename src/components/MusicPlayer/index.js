@@ -1,4 +1,15 @@
 import React from "react";
+import { connect } from "react-redux";
+import {
+  setIndex,
+  setActiveSong,
+  setPauseState,
+  setCurrTime,
+  setSeek,
+  setVolume,
+  setScreenSize,
+  setResetState,
+} from "../../Redux/Reducers/musicPlayerReducer";
 import { FiPlay, FiPause } from "react-icons/fi";
 import { BiVolumeFull } from "react-icons/bi";
 import { BsSkipForward, BsSkipBackward } from "react-icons/bs";
@@ -10,17 +21,6 @@ import SongItem from "../SongItem";
 import "./index.css";
 
 class MusicPlayer extends React.Component {
-  state = {
-    ...this.props,
-    index: 0,
-    pause: false,
-    activeSongClass: 0,
-    currTime: "0:00",
-    seek: 0,
-    volume: 5,
-    screenSize: window.innerWidth,
-  };
-
   componentDidMount() {
     this.playerRef.addEventListener("timeupdate", this.timeUpdate);
     this.playerRef.addEventListener("ended", this.nextSong);
@@ -36,7 +36,7 @@ class MusicPlayer extends React.Component {
   }
 
   resize = () => {
-    this.setState({ screenSize: window.innerWidth });
+    this.props.setScreenSize(window.innerWidth);
   };
 
   getArtistName = (artist) => {
@@ -70,65 +70,55 @@ class MusicPlayer extends React.Component {
   };
 
   prevSong = () => {
-    const { index, activeSongClass, pause } = this.state;
+    const { index, activeSongClass, pause } = this.props.store;
 
     if (index - 1 >= 0 && activeSongClass - 1 >= 0) {
-      this.setState(
-        {
-          index: index - 1,
-          activeSongClass: activeSongClass - 1,
-        },
-        this.updatePlayer
-      );
+      this.props.setIndex(index - 1);
+      this.props.setActiveSong(activeSongClass - 1);
+      setTimeout(() => this.updatePlayer(), 200);
     } else {
       this.playerRef.pause();
-      this.setState({ pause: !pause });
+      this.props.setPauseState(!pause);
     }
   };
 
   nextSong = () => {
-    const { index, activeSongClass, pause, playList } = this.state;
+    const { index, activeSongClass, pause, playlist } = this.props.store;
 
     if (
-      index + 1 === playList.length &&
-      activeSongClass + 1 === playList.length
+      index + 1 === playlist.length &&
+      activeSongClass + 1 === playlist.length
     ) {
       this.playerRef.pause();
-      this.setState({ pause: !pause });
+      this.props.setPauseState(!pause);
     } else {
-      this.setState(
-        {
-          index: index + 1,
-          activeSongClass: activeSongClass + 1,
-        },
-        this.updatePlayer
-      );
+      this.props.setIndex(index + 1);
+      this.props.setActiveSong(activeSongClass + 1);
+      setTimeout(() => this.updatePlayer(), 200);
     }
   };
 
   playOrPause = () => {
-    const { playList, index, pause } = this.state;
-    const currentSong = playList[index];
+    const { playlist, index, pause } = this.props.store;
+    const currentSong = playlist[index];
     const audio = new Audio(currentSong.audio);
-    console.log(audio);
+    // console.log(audio);
 
     if (!pause) {
       this.playerRef.play();
     } else {
       this.playerRef.pause();
     }
-    this.setState({
-      pause: !pause,
-    });
+
+    this.props.setPauseState(!pause);
   };
 
   updatePlayer = () => {
-    const { playList, index, pause } = this.state;
+    const { playlist, index, pause } = this.props.store;
 
-    const currentSong = playList[index];
-    console.log(currentSong, "currentSong");
+    const currentSong = playlist[index];
     const audio = new Audio(currentSong.audio);
-    console.log(audio);
+    // console.log(audio);
     this.playerRef.load();
 
     if (pause) {
@@ -147,9 +137,11 @@ class MusicPlayer extends React.Component {
       100 * (this.playerRef.currentTime / this.playerRef.duration);
 
     if (inSecs < 10) {
-      this.setState({ currTime: `${inMins}:0${inSecs}`, seek: progress });
+      this.props.setCurrTime(`${inMins}:0${inSecs}`);
+      this.props.setSeek(progress);
     } else {
-      this.setState({ currTime: `${inMins}:${inSecs}`, seek: progress });
+      this.props.setCurrTime(`${inMins}:${inSecs}`);
+      this.props.setSeek(progress);
     }
   };
 
@@ -163,38 +155,37 @@ class MusicPlayer extends React.Component {
     return `${inMins}:${inSecs}`;
   };
 
-  onClickSelectSong = (indx) => {
-    this.setState(
-      {
-        index: indx,
-        activeSongClass: indx,
-        pause: true,
-      },
-      this.updatePlayer
-    );
+  onClickSelectSong = (index) => {
+    this.props.setIndex(index);
+    this.props.setActiveSong(index);
+    this.props.setPauseState(true);
+
+    setTimeout(() => this.updatePlayer(), 200);
   };
 
   changeCurrTime = () => {
-    const { seek } = this.state;
+    const { seek } = this.props.store;
     this.playerRef.currentTime = (this.playerRef.duration * seek) / 100;
   };
 
   adjustVolume = () => {
-    const { volume } = this.state;
+    const { volume } = this.props.store;
     this.playerRef.volume = volume / 10;
   };
 
   changeSeekSlider = (event) => {
-    this.setState({ seek: event.target.value }, this.changeCurrTime);
+    this.props.setSeek(Number(event.target.value));
+    setTimeout(() => this.changeCurrTime(), 200);
   };
 
   changeVolumeSlider = (event) => {
-    this.setState({ volume: event.target.value }, this.adjustVolume);
+    this.props.setVolume(Number(event.target.value));
+    setTimeout(() => this.adjustVolume(), 200);
   };
 
   renderMusicControlsMobileView = () => {
-    const { playList, index, pause } = this.state;
-    const currentSong = playList[index];
+    const { playlist, index, pause } = this.props.store;
+    const currentSong = playlist[index];
     const { album_image, album_artist } = this.getAlbumImageArtist(currentSong);
 
     return (
@@ -244,9 +235,9 @@ class MusicPlayer extends React.Component {
   };
 
   renderMusicControlsDesktopView = () => {
-    const { playList, index, pause, currTime, seek, volume } = this.state;
+    const { playlist, index, pause, currTime, seek, volume } = this.props.store;
 
-    const currentSong = playList[index];
+    const currentSong = playlist[index];
     const { duration_ms } = currentSong;
 
     const { album_image, album_artist } = this.getAlbumImageArtist(currentSong);
@@ -299,8 +290,9 @@ class MusicPlayer extends React.Component {
         <input
           type="range"
           className="seek-slider"
-          value={seek}
+          value={seek || 0}
           onChange={this.changeSeekSlider}
+          onClick={this.changeSeekSlider}
           max="100"
         />
         <span className="time-update">{currTime}</span>
@@ -311,17 +303,18 @@ class MusicPlayer extends React.Component {
           value={volume}
           className="volume-slider"
           onChange={this.changeVolumeSlider}
+          onClick={this.changeVolumeSlider}
         />
       </>
     );
   };
 
   renderSongsList = () => {
-    const { playList, activeSongClass, displayInfo } = this.state;
-    // console.log("MusicPlayer > playList > ", playList);
+    const { playlist, activeSongClass, displayInfo } = this.props.store;
+    // console.log("MusicPlayer > playlist > ", playlist);
     return (
       <>
-        {playList.map((item, key = 0) => (
+        {playlist.map((item, key = 0) => (
           <SongItem
             songData={item}
             displayInfo={displayInfo}
@@ -336,7 +329,8 @@ class MusicPlayer extends React.Component {
   };
 
   render() {
-    const { displayInfo, section, screenSize } = this.state;
+    const { displayInfo, section, screenSize } = this.props.store;
+    // console.log(this.props, "musicccc player props");
 
     return (
       <div className="player-container">
@@ -365,4 +359,23 @@ class MusicPlayer extends React.Component {
   }
 }
 
-export default MusicPlayer;
+const mapStateToProps = (state) => {
+  return {
+    store: { ...state.musicPlayerReducer, ...state.playlistReducer },
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setIndex: (data) => dispatch(setIndex(data)),
+    setActiveSong: (data) => dispatch(setActiveSong(data)),
+    setCurrTime: (data) => dispatch(setCurrTime(data)),
+    setPauseState: (data) => dispatch(setPauseState(data)),
+    setScreenSize: (data) => dispatch(setScreenSize(data)),
+    setSeek: (data) => dispatch(setSeek(data)),
+    setVolume: (data) => dispatch(setVolume(data)),
+    setResetState: (data) => dispatch(setResetState(data)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MusicPlayer);

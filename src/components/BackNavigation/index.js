@@ -1,28 +1,27 @@
-import React, {Component} from 'react'
-import {withRouter} from 'react-router-dom'
-import {IoIosArrowBack} from 'react-icons/io'
+import React from "react";
+import { useDispatch } from "react-redux";
+import { setResetState } from "../../Redux/Reducers/musicPlayerReducer";
+import { resetState } from "../../utils/constants";
+import { withRouter } from "react-router-dom";
+import { IoIosArrowBack } from "react-icons/io";
 
-import './index.css'
+import "./index.css";
 
-class BackNavigation extends Component {
-  onClickGoBack = () => {
-    const {history} = this.props
-    history.goBack()
-  }
+const BackNavigation = ({ history }) => {
+  const dispatch = useDispatch();
 
-  render() {
-    return (
-      <div className="back-arrow-container">
-        <button
-          type="button"
-          onClick={this.onClickGoBack}
-          className="back-button"
-        >
-          <IoIosArrowBack className="back-arrow" />
-        </button>
-      </div>
-    )
-  }
-}
+  const onClickGoBack = () => {
+    dispatch(setResetState(resetState));
+    history.goBack();
+  };
 
-export default withRouter(BackNavigation)
+  return (
+    <div className="back-arrow-container">
+      <button type="button" onClick={onClickGoBack} className="back-button">
+        <IoIosArrowBack className="back-arrow" />
+      </button>
+    </div>
+  );
+};
+
+export default withRouter(BackNavigation);
