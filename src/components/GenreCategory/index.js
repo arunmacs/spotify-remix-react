@@ -1,15 +1,18 @@
 import React, { Component } from "react";
-import { getFetchOptions } from "../../utils/utils";
-import { apiUrls } from "../../utils/constants";
+import { connect } from "react-redux";
+import {
+  setGenresData,
+  setScreenSize,
+} from "../../Redux/Reducers/genreReducer";
+import { fetchGenresCategoryData } from "../../services/spotifyHome";
 import LoaderView from "../LoaderView";
 import BackNavigation from "../BackNavigation";
 import NavBar from "../NavBar";
 import GenreCategoryItem from "../GenreCategoryItem";
 import "./index.css";
+import { sessionTimedOut } from "../../utils/utils";
 
 class GenreCategory extends Component {
-  state = { genreListData: [], isLoading: true, screenSize: window.innerWidth };
-
   componentDidMount() {
     this.getGenrePlayList();
     window.addEventListener("resize", this.resizeWindow);
@@ -20,34 +23,31 @@ class GenreCategory extends Component {
   }
 
   resizeWindow = () => {
-    this.setState({ screenSize: window.innerWidth });
+    this.props.setScreenSize(window.innerWidth);
   };
 
   getGenrePlayList = async () => {
-    const { match } = this.props;
-    const { params } = match;
-    const { categoryId } = params;
+    const { match, store } = this.props;
+    const { categoryId } = match.params;
+    const { country } = store.userProfile;
 
-    const userDataResponse = await fetch(apiUrls.userApiUrl, getFetchOptions());
-    const userData = await userDataResponse.json();
-    const { country } = userData;
-
-    const genreListApiUrl = `https://api.spotify.com/v1/browse/categories/${categoryId}/playlists?country=${country}`;
-
-    const response = await fetch(genreListApiUrl, getFetchOptions());
-    if (response.ok === true) {
-      const data = await response.json();
-      // console.log("data >>> ", data);
-
-      const updatedData = await data.playlists.items.map((item) => item);
-      // console.log("updatedData >>> ", updatedData);
-
-      this.setState({ genreListData: updatedData, isLoading: false });
+    try {
+      const response = await fetchGenresCategoryData(categoryId, country);
+      const data = response.playlists.items.map((item) => item);
+      // console.log(data, "genre Cat data");
+      this.props.setGenresData({
+        genreListData: data,
+        isLoading: false,
+        screenSize: window.innerWidth,
+      });
+    } catch (error) {
+      console.error(error);
+      sessionTimedOut(this.props);
     }
   };
 
   renderPage = () => {
-    const { genreListData } = this.state;
+    const { genreListData } = this.props.store;
 
     return (
       <>
@@ -62,7 +62,8 @@ class GenreCategory extends Component {
   };
 
   render() {
-    const { isLoading, screenSize } = this.state;
+    const { isLoading, screenSize } = this.props.store;
+    // console.log(this.props);
 
     return (
       <>
@@ -76,4 +77,17 @@ class GenreCategory extends Component {
   }
 }
 
-export default GenreCategory;
+const mapStateToProps = (state) => {
+  return {
+    store: { ...state.genre, ...state.user },
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setGenresData: (data) => dispatch(setGenresData(data)),
+    setScreenSize: (data) => dispatch(setScreenSize(data)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(GenreCategory);

@@ -2,21 +2,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 // Redux/UtilityFunctions/Constants/Services
+import { setSpotifyHomeData } from "../../Redux/Reducers/spotifyHomeReducer";
+import { fetchUserProfile } from "../../Redux/Reducers/userProfileReducer";
 import {
-  setEditorsPicks,
-  setGenreMoods,
-  setNewReleases,
-  setEditorPickSectionLoading,
-  setGenreMoodSectionLoading,
-  setNewReleaseSectionLoading,
-} from "../../Redux/Reducers/spotifyHomeReducer";
-// import { userProfile } from '../../services'
-import {
-  getTimeStamp,
-  sessionTimedOut,
-  getFetchOptions,
-} from "../../utils/utils";
-import { actions, apiUrls } from "../../utils/constants";
+  fetchEditorsPickData,
+  fetchGenresAndMoodsData,
+  fetchNewReleasesData,
+} from "../../services/spotifyHome";
+import { sessionTimedOut } from "../../utils/utils";
 // Components
 import NavBar from "../NavBar";
 import Cards from "../Cards";
@@ -25,109 +18,77 @@ import LoaderView from "../LoaderView";
 import "./index.css";
 
 class SpotifyClone extends Component {
-  componentDidMount() {
-    this.getEditorsPickData();
-    this.getGenreAndMoodsData();
-    this.getNewReleasesData();
+  async componentDidMount() {
+    await this.props.fetchUserProfile();
+    const { userProfile } = this.props.store;
+    await Promise.all([
+      fetchEditorsPickData(userProfile),
+      fetchGenresAndMoodsData(),
+      fetchNewReleasesData(userProfile),
+    ])
+      .then((responseArray) => {
+        // console.log(responseArray, " [][][] responseArray <><><>");
+
+        const editorsPickData = responseArray[0].playlists.items.map(
+          (item) => ({
+            id: item.id || "undefined",
+            type: item.type || "undefined",
+            album_type: item.album_type || "undefined",
+            name: item.name || "undefined",
+            artists: item.artists || "undefined",
+            images: item.images || "undefined",
+            release_date: item.release_date || "undefined",
+            external_urls: item.external_urls || "undefined",
+            total_tracks: item.total_tracks || "undefined",
+            uri: item.uri || "undefined",
+            slug: "editor-pick",
+          })
+        );
+
+        const genresAndMoodsData = responseArray[1].categories.items.map(
+          (item) => ({
+            id: item.id || "undefined",
+            type: "category",
+            album_type: item.album_type || "undefined",
+            name: item.name || "undefined",
+            artists: item.artists || "undefined",
+            images: item.icons || "undefined",
+            release_date: item.release_date || "undefined",
+            external_urls: item.external_urls || "undefined",
+            total_tracks: item.total_tracks || "undefined",
+            uri: item.uri || "undefined",
+            slug: "genre",
+          })
+        );
+
+        const newReleasesData = responseArray[2].albums.items.map((item) => ({
+          id: item.id || "undefined",
+          type: item.type || "undefined",
+          album_type: item.album_type || "undefined",
+          name: item.name || "undefined",
+          artists: item.artists || "undefined",
+          images: item.images || "undefined",
+          release_date: item.release_date || "undefined",
+          external_urls: item.external_urls || "undefined",
+          total_tracks: item.total_tracks || "undefined",
+          uri: item.uri || "undefined",
+          slug: "new-releases/album",
+        }));
+
+        this.props.setSpotifyHomeData({
+          editorsPickData,
+          genresAndMoodsData,
+          newReleasesData,
+          isEditorPickSectionLoading: false,
+          isGenreMoodSectionLoading: false,
+          isNewReleaseSectionLoading: false,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        sessionTimedOut(this.props);
+      });
   }
-
-  getEditorsPickData = async () => {
-    const timeStamp = getTimeStamp();
-    const userDataResponse = await fetch(apiUrls.userApiUrl, getFetchOptions());
-    const userData = await userDataResponse.json();
-    const { country } = userData;
-    const editorsPickApiUrl = `https://api.spotify.com/v1/browse/featured-playlists?country=${country}&timestamp=${timeStamp}`;
-    const response = await fetch(editorsPickApiUrl, getFetchOptions());
-
-    if (response.ok === true) {
-      const data = await response.json();
-      // console.log('getEditorsPickData', data)
-
-      const updatedData = data.playlists.items.map((item) => ({
-        id: item.id || "undefined",
-        type: item.type || "undefined",
-        albumType: item.album_type || "undefined",
-        name: item.name || "undefined",
-        artists: item.artists || "undefined",
-        images: item.images || "undefined",
-        releaseDate: item.release_date || "undefined",
-        externalUrls: item.external_urls || "undefined",
-        totalTracks: item.total_tracks || "undefined",
-        uri: item.uri || "undefined",
-        slug: "editor-pick",
-      }));
-
-      this.props.setData(updatedData, { type: actions.editors });
-      this.props.setLoading(false, { type: actions.editors });
-    } else {
-      sessionTimedOut(this.props);
-    }
-  };
-
-  getGenreAndMoodsData = async () => {
-    const categoryApiUrl = "https://api.spotify.com/v1/browse/categories";
-
-    const response = await fetch(categoryApiUrl, getFetchOptions());
-
-    if (response.ok === true) {
-      const data = await response.json();
-      // console.log('getGenreAndMoodsData', data)
-
-      const updatedData = data.categories.items.map((item) => ({
-        id: item.id || "undefined",
-        type: "category",
-        albumType: item.album_type || "undefined",
-        name: item.name || "undefined",
-        artists: item.artists || "undefined",
-        images: item.icons || "undefined",
-        releaseDate: item.release_date || "undefined",
-        externalUrls: item.external_urls || "undefined",
-        totalTracks: item.total_tracks || "undefined",
-        uri: item.uri || "undefined",
-        slug: "genre",
-      }));
-
-      this.props.setData(updatedData, { type: actions.genres });
-      this.props.setLoading(false, { type: actions.genres });
-    } else {
-      sessionTimedOut(this.props);
-    }
-  };
-
-  getNewReleasesData = async () => {
-    const userApiUrl = "https://api.spotify.com/v1/me";
-
-    const userDataResponse = await fetch(userApiUrl, getFetchOptions());
-    const userData = await userDataResponse.json();
-    const { country } = userData;
-
-    const newReleasesApiUrl = `https://api.spotify.com/v1/browse/new-releases?country=${country}`;
-
-    const response = await fetch(newReleasesApiUrl, getFetchOptions());
-    if (response.ok === true) {
-      const data = await response.json();
-      // console.log('getNewReleasesData', data)
-
-      const updatedData = data.albums.items.map((item) => ({
-        id: item.id || "undefined",
-        type: item.type || "undefined",
-        albumType: item.album_type || "undefined",
-        name: item.name || "undefined",
-        artists: item.artists || "undefined",
-        images: item.images || "undefined",
-        releaseDate: item.release_date || "undefined",
-        externalUrls: item.external_urls || "undefined",
-        totalTracks: item.total_tracks || "undefined",
-        uri: item.uri || "undefined",
-        slug: "new-releases/album",
-      }));
-
-      this.props.setData(updatedData, { type: actions.newReleases });
-      this.props.setLoading(false, { type: actions.newReleases });
-    } else {
-      sessionTimedOut(this.props);
-    }
-  };
 
   renderCardsItems = (title, data) => (
     <div className="content-container">
@@ -150,6 +111,7 @@ class SpotifyClone extends Component {
       newReleasesData,
     } = this.props.store;
 
+    // console.log(this.props);
     return (
       <>
         {isEditorPickSectionLoading ? (
@@ -183,37 +145,14 @@ class SpotifyClone extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    store: state.spotifyHomeReducer,
+    store: { ...state.spotifyHome, ...state.user },
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setData: (data, { type }) => {
-      switch (type) {
-        case actions.editors:
-          return dispatch(setEditorsPicks(data));
-        case actions.genres:
-          return dispatch(setGenreMoods(data));
-        case actions.newReleases:
-          return dispatch(setNewReleases(data));
-        default:
-          return;
-      }
-    },
-    setLoading: (data, { type }) => {
-      switch (type) {
-        case actions.editors:
-          return dispatch(setEditorPickSectionLoading(data));
-        case actions.genres:
-          return dispatch(setGenreMoodSectionLoading(data));
-        case actions.newReleases:
-          return dispatch(setNewReleaseSectionLoading(data));
-        default:
-          return;
-      }
-    },
-    // setData: (data) => dispatch(setSpotifyHomeData(data)),
+    setSpotifyHomeData: (data) => dispatch(setSpotifyHomeData(data)),
+    fetchUserProfile: (data) => dispatch(fetchUserProfile(data)),
   };
 };
 

@@ -4,9 +4,7 @@ import { Link } from "react-router-dom";
 import "./index.css";
 
 const Cards = (props) => {
-  const { data } = props;
-  const { name, id, images, slug } = data;
-
+  const { name, id, images, slug } = props.data;
   let image;
 
   if (images !== undefined) {

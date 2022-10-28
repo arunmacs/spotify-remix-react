@@ -361,7 +361,7 @@ class MusicPlayer extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    store: { ...state.musicPlayerReducer, ...state.playlistReducer },
+    store: { ...state.musicPlayer, ...state.playlist },
   };
 };
 

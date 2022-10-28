@@ -182,7 +182,7 @@
   }
 
   .icon-container:hover {
-    border-left: 3px solid #1ed760;
+    border-right: 3px solid #1ed760;
     background-color: #181818;
     transform: scale(1);
   }
@@ -192,7 +192,7 @@
   }
 
   .activeIcon {
-    border-left: 3px solid #1ed760;
+    border-right: 3px solid #1ed760;
     background-color: #181818;
   }
 

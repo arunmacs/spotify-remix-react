@@ -3,13 +3,15 @@ import spotifyHomeReducer from "./Reducers/spotifyHomeReducer";
 import playlistReducer from "./Reducers/playlistReducer";
 import musicPlayerReducer from "./Reducers/musicPlayerReducer";
 import userProfileReducer from "./Reducers/userProfileReducer";
+import genreReducer from "./Reducers/genreReducer";
 
 export const store = configureStore({
   reducer: {
-    spotifyHomeReducer,
-    playlistReducer,
-    musicPlayerReducer,
-    userProfileReducer,
+    spotifyHome: spotifyHomeReducer,
+    playlist: playlistReducer,
+    musicPlayer: musicPlayerReducer,
+    user: userProfileReducer,
+    genre: genreReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

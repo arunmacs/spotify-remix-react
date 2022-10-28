@@ -91,7 +91,7 @@ class Playlist extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    store: state.playlistReducer,
+    store: state.playlist,
   };
 };
 

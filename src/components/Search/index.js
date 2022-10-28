@@ -1,59 +1,59 @@
-import React, {Component} from 'react'
-import {FiSearch} from 'react-icons/fi'
-import SearchTrackItem from '../SearchTrackItem'
-import SearchPlaylistItem from '../SearchPlaylistItem'
-import NavBar from '../NavBar'
-import BackNavigation from '../BackNavigation'
-import LoaderView from '../LoaderView'
+import React, { Component } from "react";
+import { FiSearch } from "react-icons/fi";
+import SearchTrackItem from "../SearchTrackItem";
+import SearchPlaylistItem from "../SearchPlaylistItem";
+import NavBar from "../NavBar";
+import BackNavigation from "../BackNavigation";
+import LoaderView from "../LoaderView";
 
-import './index.css'
+import "./index.css";
 
 const apiStatus = {
-  initial: 'INITIAL',
-  inProgress: 'INPROGRESS',
-  success: 'SUCCESS',
-  failure: 'FAILURE',
-}
+  initial: "INITIAL",
+  inProgress: "INPROGRESS",
+  success: "SUCCESS",
+  failure: "FAILURE",
+};
 
 class Search extends Component {
   state = {
     searchPlaylistData: [],
     searchTracksData: [],
-    searchInput: '',
+    searchInput: "",
     playlistsStatus: apiStatus.initial,
     tracksStatus: apiStatus.initial,
     screenSize: window.innerWidth,
-  }
+  };
 
   getAccessToken = () => {
-    const token = localStorage.getItem('pa_token')
-    return token
-  }
+    const token = localStorage.getItem("pa_token");
+    return token;
+  };
 
-  fetchSearchResults = async event => {
+  fetchSearchResults = async (event) => {
     this.setState({
       playlistsStatus: apiStatus.inProgress,
       tracksStatus: apiStatus.inProgress,
-    })
-    event.preventDefault()
-    const {searchInput} = this.state
-    const token = this.getAccessToken()
+    });
+    event.preventDefault();
+    const { searchInput } = this.state;
+    const token = this.getAccessToken();
 
-    const searchApiUrl = `https://api.spotify.com/v1/search?type=track,playlist&q=${searchInput}&market=from_token`
+    const searchApiUrl = `https://api.spotify.com/v1/search?type=track,playlist&q=${searchInput}&market=from_token`;
     const searchOptions = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      method: 'GET',
-    }
+      method: "GET",
+    };
 
-    const response = await fetch(searchApiUrl, searchOptions)
+    const response = await fetch(searchApiUrl, searchOptions);
 
     if (response.ok) {
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.playlists.total !== 0) {
-        const updatedPlaylist = data.playlists.items.map(item => ({
+        const updatedPlaylist = data.playlists.items.map((item) => ({
           collaborative: item.collaborative,
           description: item.description,
           externalUrls: item.external_urls,
@@ -68,20 +68,20 @@ class Search extends Component {
           tracks: item.tracks,
           type: item.type,
           uri: item.uri,
-        }))
+        }));
 
         this.setState({
           searchPlaylistData: updatedPlaylist,
           playlistsStatus: apiStatus.success,
-        })
+        });
       } else {
         this.setState({
           playlistsStatus: apiStatus.failure,
-        })
+        });
       }
 
       if (data.tracks.total !== 0) {
-        const updatedTracksData = data.tracks.items.map(item => ({
+        const updatedTracksData = data.tracks.items.map((item) => ({
           album: item.album,
           artists: item.artists,
           discNumber: item.disc_number,
@@ -99,86 +99,86 @@ class Search extends Component {
           trackNumber: item.track_number,
           type: item.type,
           uri: item.uri,
-        }))
+        }));
 
         this.setState({
           searchTracksData: updatedTracksData,
           tracksStatus: apiStatus.success,
-        })
+        });
       } else {
         this.setState({
           tracksStatus: apiStatus.failure,
-        })
+        });
       }
     }
-  }
+  };
 
-  setInputValue = event => {
-    this.setState({searchInput: event.target.value})
-  }
+  setInputValue = (event) => {
+    this.setState({ searchInput: event.target.value });
+  };
 
   renderPlaylistsResults = () => {
-    const {searchPlaylistData} = this.state
+    const { searchPlaylistData } = this.state;
 
     return (
       <div className="search-playlist-container">
         <h1 className="content-name">Playlists</h1>
         <ul className="playlist-content">
-          {searchPlaylistData.map(item => (
+          {searchPlaylistData.map((item) => (
             <SearchPlaylistItem playlistItem={item} key={item.id} />
           ))}
         </ul>
       </div>
-    )
-  }
+    );
+  };
 
   renderTracksResults = () => {
-    const {searchTracksData} = this.state
+    const { searchTracksData } = this.state;
 
     return (
       <div className="search-tracks-container">
         <h1 className="content-name">Songs</h1>
         <ul className="tracks-content">
-          {searchTracksData.map(item => (
+          {searchTracksData.map((item) => (
             <SearchTrackItem trackData={item} key={item.id} />
           ))}
         </ul>
       </div>
-    )
-  }
+    );
+  };
 
   getPlaylists = () => {
-    const {playlistsStatus} = this.state
+    const { playlistsStatus } = this.state;
 
     switch (playlistsStatus) {
       case apiStatus.inProgress:
-        return <LoaderView />
+        return <LoaderView />;
       case apiStatus.success:
-        return this.renderPlaylistsResults()
+        return this.renderPlaylistsResults();
       case apiStatus.failure:
-        return this.noResultsFoundView()
+        return this.noResultsFoundView();
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   getTracksLists = () => {
-    const {tracksStatus} = this.state
+    const { tracksStatus } = this.state;
 
     switch (tracksStatus) {
       case apiStatus.inProgress:
-        return <LoaderView />
+        return <LoaderView />;
       case apiStatus.success:
-        return this.renderTracksResults()
+        return this.renderTracksResults();
       case apiStatus.failure:
-        return this.noResultsFoundView()
+        return this.noResultsFoundView();
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   noResultsFoundView = () => {
-    const {searchInput} = this.state
+    const { searchInput } = this.state;
 
     return (
       <div className="no-results-container">
@@ -190,11 +190,11 @@ class Search extends Component {
           different keywords.
         </p>
       </div>
-    )
-  }
+    );
+  };
 
   renderSearchView = () => {
-    const {searchInput} = this.state
+    const { searchInput } = this.state;
 
     return (
       <>
@@ -215,11 +215,11 @@ class Search extends Component {
           {this.getTracksLists()}
         </div>
       </>
-    )
-  }
+    );
+  };
 
   render() {
-    const {screenSize} = this.state
+    const { screenSize } = this.state;
 
     return (
       <div className="search-body">
@@ -227,8 +227,8 @@ class Search extends Component {
         <BackNavigation />
         <div className="search-container">{this.renderSearchView()}</div>
       </div>
-    )
+    );
   }
 }
 
-export default Search
+export default Search;

@@ -7,11 +7,16 @@ export const slugs = {
 };
 
 export const apiUrls = {
+  editorsPicksApiUrl: "https://api.spotify.com/v1/browse/featured-playlists",
   editorPickPlaylistApiUrl:
     "https://api.spotify.com/v1/users/spotify/playlists",
+  newReleasesApiUrl: "https://api.spotify.com/v1/browse/new-releases",
   newReleasePlaylistApiUrl: "https://api.spotify.com/v1/albums",
   genreAlbumPlaylistApiUrl: `https://api.spotify.com/v1/playlists`,
-  // suffix with /:id/tracks for the above api in component level filter
+  // suffix with /:id/tracks for the above api in component/service level
+  genresAndMoodsApiUrl: "https://api.spotify.com/v1/browse/categories",
+  genresCategoryApiUrl: "https://api.spotify.com/v1/browse/categories",
+  // suffix with category /:id and ?country= param for the above api in component/service level
   yourMusicPlaylistApiUrl: `https://api.spotify.com/v1/me/tracks`,
   yourPlaylistsApiUrl: `https://api.spotify.com/v1/users/spotify/playlists`,
   userApiUrl: "https://api.spotify.com/v1/me",

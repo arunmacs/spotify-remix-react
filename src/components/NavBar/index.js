@@ -8,7 +8,13 @@ import { IoMusicalNotesSharp, IoClose } from "react-icons/io5";
 import "./index.css";
 
 class NavBar extends Component {
-  state = { showMenu: false };
+  state = { showMenu: false, slug: "/" };
+
+  componentDidMount() {
+    const { match } = this.props;
+    const slug = match.path.split("/")[1];
+    this.setState({ slug });
+  }
 
   onClickToggleMenu = () => {
     this.setState((prevState) => ({ showMenu: !prevState.showMenu }));
@@ -20,8 +26,7 @@ class NavBar extends Component {
   };
 
   RenderMenuButton = () => {
-    const { match } = this.props;
-    const slug = match.path.split("/")[1];
+    const { slug } = this.state;
 
     return (
       <>
@@ -100,7 +105,7 @@ class NavBar extends Component {
               to="/your-playlists"
               key="yourPlaylist"
               className={`icon-container ${
-                slug === "playlists" ? "activeIcon" : ""
+                slug === "your-playlists" ? "activeIcon" : ""
               } `}
             >
               <BsMusicNoteList className="menu-option" />
@@ -111,32 +116,57 @@ class NavBar extends Component {
     );
   };
 
-  RenderMenuOptions = () => (
-    <nav className="top-navbar-links">
-      <Link to="/profile">
-        <BsFillPersonFill className="menu-option" />
-      </Link>
-      <Link to="/">
-        <IoMdHome className="menu-option" />
-      </Link>
-      <Link to="/search">
-        <FiSearch className="menu-option" />
-      </Link>
-      <Link to="/your-music">
-        <IoMusicalNotesSharp className="menu-option" />
-      </Link>
-      <Link to="/playlists">
-        <BsMusicNoteList className="menu-option" />
-      </Link>
-      <button
-        type="button"
-        onClick={this.onClickToggleMenu}
-        className="menu-close-button"
-      >
-        <IoClose className="close-icon" />
-      </button>
-    </nav>
-  );
+  RenderMenuOptions = () => {
+    const { slug } = this.state;
+
+    return (
+      <nav className="top-navbar-links">
+        <Link
+          to="/profile"
+          className={`icon-container ${
+            slug === "profile" ? "activeIcon" : ""
+          } `}
+        >
+          <BsFillPersonFill className="menu-option" />
+        </Link>
+        <Link
+          to="/"
+          className={`icon-container ${slug !== "" ? "" : "activeIcon"} `}
+        >
+          <IoMdHome className="menu-option" />
+        </Link>
+        <Link
+          to="/search"
+          className={`icon-container ${slug === "search" ? "activeIcon" : ""} `}
+        >
+          <FiSearch className="menu-option" />
+        </Link>
+        <Link
+          to="/your-music"
+          className={`icon-container ${
+            slug === "your-music" ? "activeIcon" : ""
+          } `}
+        >
+          <IoMusicalNotesSharp className="menu-option" />
+        </Link>
+        <Link
+          to="/playlists"
+          className={`icon-container ${
+            slug === "playlists" ? "activeIcon" : ""
+          } `}
+        >
+          <BsMusicNoteList className="menu-option" />
+        </Link>
+        <button
+          type="button"
+          onClick={this.onClickToggleMenu}
+          className="menu-close-button"
+        >
+          <IoClose className="close-icon" />
+        </button>
+      </nav>
+    );
+  };
 
   render() {
     const { showMenu } = this.state;

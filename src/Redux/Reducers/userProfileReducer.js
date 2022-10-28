@@ -1,8 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getFetchOptions } from "../../utils/utils";
+import { apiUrls } from "../../utils/constants";
 
 const initialState = {
-  userData: {},
-  isLoading: true,
+  userProfile: {},
+};
+
+export const fetchUserProfile = () => {
+  return async (dispatch) => {
+    try {
+      const response = await fetch(apiUrls.userApiUrl, getFetchOptions());
+      const userData = await response.json();
+      dispatch(setUserProfileData(userData));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 };
 
 const userProfileReducer = createSlice({
@@ -10,9 +23,7 @@ const userProfileReducer = createSlice({
   initialState,
   reducers: {
     setUserProfileData: (state, action) => {
-      const { userData, isLoading } = action.payload;
-      state.userData = userData;
-      state.isLoading = isLoading;
+      state.userProfile = action.payload;
     },
   },
 });
