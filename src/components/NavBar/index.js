@@ -150,9 +150,9 @@ class NavBar extends Component {
           <IoMusicalNotesSharp className="menu-option" />
         </Link>
         <Link
-          to="/playlists"
+          to="/your-playlists"
           className={`icon-container ${
-            slug === "playlists" ? "activeIcon" : ""
+            slug === "your-playlists" ? "activeIcon" : ""
           } `}
         >
           <BsMusicNoteList className="menu-option" />
